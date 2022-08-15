@@ -27,7 +27,7 @@ public class MQConfig {
 	}
 	@Bean
 	public Queue queue() {
-		return new Queue(QUEUE, true);
+		return new Queue(MIAOSHA_QUEUE, true);
 	}
 	/**
 	 * Direct模式 交换机Exchange
