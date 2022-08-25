@@ -7,16 +7,29 @@ import cn.hfbin.seckill.redis.RedisService;
 import cn.hfbin.seckill.service.OrderService;
 import cn.hfbin.seckill.service.SeckillGoodsService;
 import cn.hfbin.seckill.service.SeckillOrderService;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 @Service
 public class MQReceiver {
 
 		private static Logger log = LoggerFactory.getLogger(MQReceiver.class);
+
+		private static Map<String,Object> map=new HashMap();
+
+		private static Set<String> set=new HashSet<>();
+		private static Set<String> set1=new HashSet<>();
+
 		
 		@Autowired
 		RedisService redisService;
@@ -50,4 +63,90 @@ public class MQReceiver {
 	    	//减库存 下订单 写入秒杀订单
 			seckillOrderService.insert(user, goods);
 		}
+
+//		@RabbitListener(queues = MQConfig.QUEUE1)
+//		public void test(String message){
+//			System.out.println(message);
+//			log.info("receive message:"+message);
+//			JSONObject jsonObject  = JSONObject.parseObject(message);
+//			TestMessage testMessage=new TestMessage(jsonObject.getDate("time"),
+//					jsonObject.getInteger("num"),
+//					jsonObject.getString("uuid"),
+//					jsonObject.getInteger("size"));
+//			String uuid=testMessage.getUuid();
+//			map.put(uuid,testMessage);
+//			int max=0;
+//			TestMessage ct=null;
+//			if(map.size()==testMessage.getSize()){
+//				for(String key:map.keySet()){
+//					TestMessage t= (TestMessage) map.get(key);
+//					Integer num=t.getNum();
+//					if(max<num){
+//						max=num;
+//						ct=testMessage;
+//					}
+//				}
+//				log.info("----------------------------------------------");
+//				log.info("Test current max num:"+RedisService.beanToString(ct));
+//				log.info("----------------------------------------------");
+//				map.clear();
+//			}
+//			System.out.println("---------------"+map.size()+"---------------");
+//		}
+//
+//		@RabbitListener(queues = MQConfig.QUEUE1)
+//		public void test1(String message){
+//			System.out.println(message);
+//			log.info("receive message:"+message);
+//			JSONObject jsonObject  = JSONObject.parseObject(message);
+//			TestMessage testMessage=new TestMessage(jsonObject.getDate("time"),
+//					jsonObject.getInteger("num"),
+//					jsonObject.getString("uuid"),
+//					jsonObject.getInteger("size"));
+//			String uuid=testMessage.getUuid();
+//
+//			int max=0;
+//			TestMessage ct=null;
+//			if(map.size()==testMessage.getSize()){
+//				for(String key:map.keySet()){
+//					TestMessage t= (TestMessage) map.get(key);
+//					Integer num=t.getNum();
+//					if(max<num){
+//						max=num;
+//						ct=testMessage;
+//					}
+//				}
+//				log.info("----------------------------------------------");
+//				log.info("Test1 current max num:"+RedisService.beanToString(ct));
+//				log.info("----------------------------------------------");
+//				map.clear();
+//			}
+//			System.out.println("---------------"+map.size()+"---------------");
+//		}
+
+	@RabbitListener(queues = MQConfig.QUEUE1)
+	public void test(String message){
+		System.out.println(message);
+		log.info("receive message:"+message);
+		JSONObject jsonObject  = JSONObject.parseObject(message);
+		TestMessage testMessage=new TestMessage(jsonObject.getDate("time"),
+				jsonObject.getInteger("num"),
+				jsonObject.getString("uuid"),
+				jsonObject.getInteger("size"));
+		set.add(testMessage.getUuid());
+		System.out.println("---------------set:"+set.size()+"---------------");
+	}
+
+	@RabbitListener(queues = MQConfig.QUEUE1)
+	public void test1(String message){
+		System.out.println(message);
+		log.info("receive message:"+message);
+		JSONObject jsonObject  = JSONObject.parseObject(message);
+		TestMessage testMessage=new TestMessage(jsonObject.getDate("time"),
+				jsonObject.getInteger("num"),
+				jsonObject.getString("uuid"),
+				jsonObject.getInteger("size"));
+		set.add(testMessage.getUuid());
+		System.out.println("---------------set1:"+set.size()+"---------------");
+	}
 }

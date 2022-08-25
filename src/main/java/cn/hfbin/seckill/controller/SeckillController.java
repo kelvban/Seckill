@@ -9,6 +9,7 @@ import cn.hfbin.seckill.entity.User;
 import cn.hfbin.seckill.mq.MQReceiver;
 import cn.hfbin.seckill.mq.MQSender;
 import cn.hfbin.seckill.mq.SeckillMessage;
+import cn.hfbin.seckill.mq.TestMessage;
 import cn.hfbin.seckill.redis.GoodsKey;
 import cn.hfbin.seckill.redis.RedisService;
 import cn.hfbin.seckill.redis.UserKey;
@@ -25,8 +26,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by: HuangFuBin
@@ -66,6 +66,19 @@ public class SeckillController implements InitializingBean {
             localOverMap.put(goods.getId(), false);
         }
     }
+
+    @RequestMapping("/test")
+    @ResponseBody
+    public Result<String> test(@RequestParam Integer size,
+                       @RequestParam Integer range){
+        Random random=new Random();
+        for(int i=0;i<size;i++){
+            TestMessage testMessage=new TestMessage(new Date(),random.nextInt(range), UUID.randomUUID().toString(),size);
+            mqSender.sendTestMessage(testMessage);
+        }
+        return Result.success("执行完成");
+    }
+
 
     @RequestMapping("/seckill2")
     public String list2(Model model,
