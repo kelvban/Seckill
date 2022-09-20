@@ -17,16 +17,20 @@ import cn.hfbin.seckill.result.CodeMsg;
 import cn.hfbin.seckill.result.Result;
 import cn.hfbin.seckill.service.SeckillGoodsService;
 import cn.hfbin.seckill.service.SeckillOrderService;
+import cn.hfbin.seckill.service.TestMessageService;
 import cn.hfbin.seckill.util.CookieUtil;
 import cn.hfbin.seckill.vo.OrderDetailVo;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Created by: HuangFuBin
@@ -51,6 +55,12 @@ public class SeckillController implements InitializingBean {
     @Autowired
     MQSender mqSender;
 
+    @Resource
+    TestMessageService testMessageService;
+
+    @Resource
+    private ExecutorService executorService;
+
     private HashMap<Long, Boolean> localOverMap = new HashMap<Long, Boolean>();
 
     /**
@@ -72,10 +82,26 @@ public class SeckillController implements InitializingBean {
     public Result<String> test(@RequestParam Integer size,
                        @RequestParam Integer range){
         Random random=new Random();
+        List<TestMessage> list=new ArrayList<>();
         for(int i=0;i<size;i++){
-            TestMessage testMessage=new TestMessage(new Date(),random.nextInt(range), UUID.randomUUID().toString(),size);
-            mqSender.sendTestMessage(testMessage);
+            TestMessage testMessage=new TestMessage(new Date(),random.nextInt(range), UUID.randomUUID().toString(),size,(byte) 0);
+            list.add(testMessage);
         }
+        testMessageService.batchInsert(list);
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                Long startTime=System.currentTimeMillis();
+                if(CollectionUtils.isNotEmpty(list)){
+                    for (TestMessage testMessage:list){
+                        mqSender.sendTestMessage(testMessage);
+                    }
+                }
+                Long endTime=System.currentTimeMillis();
+                System.out.println("推送总用时："+(endTime-startTime));
+            }
+        });
+
         return Result.success("执行完成");
     }
 

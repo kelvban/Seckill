@@ -7,14 +7,17 @@ import cn.hfbin.seckill.redis.RedisService;
 import cn.hfbin.seckill.service.OrderService;
 import cn.hfbin.seckill.service.SeckillGoodsService;
 import cn.hfbin.seckill.service.SeckillOrderService;
+import cn.hfbin.seckill.service.TestMessageService;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -42,6 +45,9 @@ public class MQReceiver {
 		
 		@Autowired
 		SeckillOrderService seckillOrderService;
+
+		@Resource
+		private TestMessageService testMessageService;
 		
 		@RabbitListener(queues=MQConfig.MIAOSHA_QUEUE)
 		public void receive(String message) {
@@ -126,27 +132,63 @@ public class MQReceiver {
 
 	@RabbitListener(queues = MQConfig.QUEUE1)
 	public void test(String message){
-		System.out.println(message);
-		log.info("receive message:"+message);
+//		System.out.println(message);
+//		log.info("receive message:"+message);
 		JSONObject jsonObject  = JSONObject.parseObject(message);
 		TestMessage testMessage=new TestMessage(jsonObject.getDate("time"),
 				jsonObject.getInteger("num"),
 				jsonObject.getString("uuid"),
-				jsonObject.getInteger("size"));
-		set.add(testMessage.getUuid());
-		System.out.println("---------------set:"+set.size()+"---------------");
+				jsonObject.getInteger("size"),
+				jsonObject.getByte("flag"));
+		if(testMessage!=null&& StringUtils.isNotBlank(testMessage.getUuid())){
+			testMessageService.updateFlagByUUID(testMessage.getUuid());
+		}
+
+		synchronized (set){
+			set.add(testMessage.getUuid());
+			System.out.println("---------------set:"+set.size()+"---------------");
+		}
 	}
 
 	@RabbitListener(queues = MQConfig.QUEUE1)
 	public void test1(String message){
-		System.out.println(message);
-		log.info("receive message:"+message);
+//		System.out.println(message);
+//		log.info("receive message:"+message);
 		JSONObject jsonObject  = JSONObject.parseObject(message);
 		TestMessage testMessage=new TestMessage(jsonObject.getDate("time"),
 				jsonObject.getInteger("num"),
 				jsonObject.getString("uuid"),
-				jsonObject.getInteger("size"));
-		set.add(testMessage.getUuid());
-		System.out.println("---------------set1:"+set.size()+"---------------");
+				jsonObject.getInteger("size"),
+				jsonObject.getByte("flag"));
+		if(testMessage!=null&& StringUtils.isNotBlank(testMessage.getUuid())){
+			testMessageService.updateFlagByUUID(testMessage.getUuid());
+		}
+		synchronized (set){
+			set.add(testMessage.getUuid());
+			System.out.println("---------------set:"+set.size()+"---------------");
+		}
+//		set.add(testMessage.getUuid());
+//		System.out.println("---------------set1:"+set.size()+"---------------");
+	}
+
+	@RabbitListener(queues = MQConfig.QUEUE1)
+	public void test2(String message){
+//		System.out.println(message);
+//		log.info("receive message:"+message);
+		JSONObject jsonObject  = JSONObject.parseObject(message);
+		TestMessage testMessage=new TestMessage(jsonObject.getDate("time"),
+				jsonObject.getInteger("num"),
+				jsonObject.getString("uuid"),
+				jsonObject.getInteger("size"),
+				jsonObject.getByte("flag"));
+		if(testMessage!=null&& StringUtils.isNotBlank(testMessage.getUuid())){
+			testMessageService.updateFlagByUUID(testMessage.getUuid());
+		}
+		synchronized (set){
+			set.add(testMessage.getUuid());
+			System.out.println("---------------set:"+set.size()+"---------------");
+		}
+//		set.add(testMessage.getUuid());
+//		System.out.println("---------------set1:"+set.size()+"---------------");
 	}
 }

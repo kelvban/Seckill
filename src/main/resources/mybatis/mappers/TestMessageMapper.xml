@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.hfbin.seckill.dao.TestMessageMapper" >
+    <insert id="batchInsert">
+        insert into test_message(
+        num,
+        `uuid`,
+        `time`,
+        size,
+        flag
+        )values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.num},#{item.uuid},#{item.time},#{item.size},#{item.flag})
+        </foreach>
+    </insert>
+
+    <update id="updateFlagByUUID" parameterType="java.lang.String">
+        update test_message set flag=1 where `uuid`=#{uuid}
+    </update>
+</mapper>
