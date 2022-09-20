@@ -151,19 +151,21 @@ public class MQReceiver {
 //			set.add(testMessage.getUuid());
 //			System.out.println("---------------set:"+set.size()+"---------------");
 //		}
-		if(lock.tryLock()){
-			try {
-				set.add(testMessage.getUuid());
-			    System.out.println("---------------set:"+set.size()+"---------------");
-			}catch (Exception e){
-				e.printStackTrace();
-			}finally {
-				lock.unlock();
-			}
-		}else {
+		//		if(lock.tryLock()){
+		lock.lock();
+		try {
 			set.add(testMessage.getUuid());
 			System.out.println("---------------set:"+set.size()+"---------------");
+		}catch (Exception e){
+			e.printStackTrace();
+		}finally {
+			lock.unlock();
 		}
+//		}
+//		else {
+//			set.add(testMessage.getUuid());
+//			System.out.println("---------------set:"+set.size()+"---------------");
+//		}
 	}
 
 	@RabbitListener(queues = MQConfig.QUEUE1)
@@ -183,19 +185,21 @@ public class MQReceiver {
 //			set.add(testMessage.getUuid());
 //			System.out.println("---------------set:"+set.size()+"---------------");
 //		}
-		if(lock.tryLock()){
-			try {
-				set.add(testMessage.getUuid());
-				System.out.println("---------------set:"+set.size()+"---------------");
-			}catch (Exception e){
-				e.printStackTrace();
-			}finally {
-				lock.unlock();
-			}
-		}else {
+//		if(lock.tryLock()){
+		lock.lock();
+		try {
 			set.add(testMessage.getUuid());
 			System.out.println("---------------set:"+set.size()+"---------------");
+		}catch (Exception e){
+			e.printStackTrace();
+		}finally {
+			lock.unlock();
 		}
+//		}
+//		else {
+//			set.add(testMessage.getUuid());
+//			System.out.println("---------------set:"+set.size()+"---------------");
+//		}
 //		set.add(testMessage.getUuid());
 //		System.out.println("---------------set1:"+set.size()+"---------------");
 	}
@@ -217,19 +221,21 @@ public class MQReceiver {
 //			set.add(testMessage.getUuid());
 //			System.out.println("---------------set:"+set.size()+"---------------");
 //		}
-		if(lock.tryLock()){
-			try {
-				set.add(testMessage.getUuid());
-				System.out.println("---------------set:"+set.size()+"---------------");
-			}catch (Exception e){
-				e.printStackTrace();
-			}finally {
-				lock.unlock();
-			}
-		}else {
+// 		if(lock.tryLock()){
+		lock.lock();
+		try {
 			set.add(testMessage.getUuid());
 			System.out.println("---------------set:"+set.size()+"---------------");
+		}catch (Exception e){
+			e.printStackTrace();
+		}finally {
+			lock.unlock();
 		}
+//		}
+//		else {
+//			set.add(testMessage.getUuid());
+//			System.out.println("---------------set:"+set.size()+"---------------");
+//		}
 //		set.add(testMessage.getUuid());
 //		System.out.println("---------------set1:"+set.size()+"---------------");
 	}
