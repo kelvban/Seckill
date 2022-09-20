@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Service
 public class MQReceiver {
@@ -29,6 +30,8 @@ public class MQReceiver {
 		private static Logger log = LoggerFactory.getLogger(MQReceiver.class);
 
 		private static Map<String,Object> map=new HashMap();
+
+		private static ReentrantLock lock=new ReentrantLock();
 
 		private static Set<String> set=new HashSet<>();
 		private static Set<String> set1=new HashSet<>();
@@ -144,7 +147,20 @@ public class MQReceiver {
 			testMessageService.updateFlagByUUID(testMessage.getUuid());
 		}
 
-		synchronized (set){
+//		synchronized (set){
+//			set.add(testMessage.getUuid());
+//			System.out.println("---------------set:"+set.size()+"---------------");
+//		}
+		if(lock.tryLock()){
+			try {
+				set.add(testMessage.getUuid());
+			    System.out.println("---------------set:"+set.size()+"---------------");
+			}catch (Exception e){
+				e.printStackTrace();
+			}finally {
+				lock.unlock();
+			}
+		}else {
 			set.add(testMessage.getUuid());
 			System.out.println("---------------set:"+set.size()+"---------------");
 		}
@@ -163,7 +179,20 @@ public class MQReceiver {
 		if(testMessage!=null&& StringUtils.isNotBlank(testMessage.getUuid())){
 			testMessageService.updateFlagByUUID(testMessage.getUuid());
 		}
-		synchronized (set){
+//		synchronized (set){
+//			set.add(testMessage.getUuid());
+//			System.out.println("---------------set:"+set.size()+"---------------");
+//		}
+		if(lock.tryLock()){
+			try {
+				set.add(testMessage.getUuid());
+				System.out.println("---------------set:"+set.size()+"---------------");
+			}catch (Exception e){
+				e.printStackTrace();
+			}finally {
+				lock.unlock();
+			}
+		}else {
 			set.add(testMessage.getUuid());
 			System.out.println("---------------set:"+set.size()+"---------------");
 		}
@@ -184,7 +213,20 @@ public class MQReceiver {
 		if(testMessage!=null&& StringUtils.isNotBlank(testMessage.getUuid())){
 			testMessageService.updateFlagByUUID(testMessage.getUuid());
 		}
-		synchronized (set){
+//		synchronized (set){
+//			set.add(testMessage.getUuid());
+//			System.out.println("---------------set:"+set.size()+"---------------");
+//		}
+		if(lock.tryLock()){
+			try {
+				set.add(testMessage.getUuid());
+				System.out.println("---------------set:"+set.size()+"---------------");
+			}catch (Exception e){
+				e.printStackTrace();
+			}finally {
+				lock.unlock();
+			}
+		}else {
 			set.add(testMessage.getUuid());
 			System.out.println("---------------set:"+set.size()+"---------------");
 		}
