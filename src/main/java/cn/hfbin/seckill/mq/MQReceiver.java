@@ -142,7 +142,8 @@ public class MQReceiver {
 				jsonObject.getInteger("num"),
 				jsonObject.getString("uuid"),
 				jsonObject.getInteger("size"),
-				jsonObject.getByte("flag"));
+				jsonObject.getByte("flag"),
+				jsonObject.getString("batch"));
 		if(testMessage!=null&& StringUtils.isNotBlank(testMessage.getUuid())){
 			testMessageService.updateFlagByUUID(testMessage.getUuid());
 		}
@@ -177,7 +178,8 @@ public class MQReceiver {
 				jsonObject.getInteger("num"),
 				jsonObject.getString("uuid"),
 				jsonObject.getInteger("size"),
-				jsonObject.getByte("flag"));
+				jsonObject.getByte("flag"),
+				jsonObject.getString("batch"));
 		if(testMessage!=null&& StringUtils.isNotBlank(testMessage.getUuid())){
 			testMessageService.updateFlagByUUID(testMessage.getUuid());
 		}
@@ -213,7 +215,8 @@ public class MQReceiver {
 				jsonObject.getInteger("num"),
 				jsonObject.getString("uuid"),
 				jsonObject.getInteger("size"),
-				jsonObject.getByte("flag"));
+				jsonObject.getByte("flag"),
+				jsonObject.getString("batch"));
 		if(testMessage!=null&& StringUtils.isNotBlank(testMessage.getUuid())){
 			testMessageService.updateFlagByUUID(testMessage.getUuid());
 		}

@@ -12,13 +12,15 @@ public class TestMessage {
     private String uuid;
     private Integer size;
     private Byte flag;
+    private String batch;
 
-    public TestMessage(Date time, int num, String uuid,Integer size,Byte flag) {
+    public TestMessage(Date time, int num, String uuid,Integer size,Byte flag,String batch) {
         this.time = time;
         this.num = num;
         this.uuid = uuid;
         this.size = size;
         this.flag=flag;
+        this.batch=batch;
     }
 
 }

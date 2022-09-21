@@ -7,10 +7,11 @@
         `uuid`,
         `time`,
         size,
-        flag
+        flag,
+        batch
         )values
         <foreach collection="list" item="item" separator=",">
-            (#{item.num},#{item.uuid},#{item.time},#{item.size},#{item.flag})
+            (#{item.num},#{item.uuid},#{item.time},#{item.size},#{item.flag},#{item.batch})
         </foreach>
     </insert>
 

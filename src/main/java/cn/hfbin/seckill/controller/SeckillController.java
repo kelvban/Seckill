@@ -80,11 +80,12 @@ public class SeckillController implements InitializingBean {
     @RequestMapping("/test")
     @ResponseBody
     public Result<String> test(@RequestParam Integer size,
-                       @RequestParam Integer range){
+                       @RequestParam Integer range,
+                               @RequestParam String batch){
         Random random=new Random();
         List<TestMessage> list=new ArrayList<>();
         for(int i=0;i<size;i++){
-            TestMessage testMessage=new TestMessage(new Date(),random.nextInt(range), UUID.randomUUID().toString(),size,(byte) 0);
+            TestMessage testMessage=new TestMessage(new Date(),random.nextInt(range), UUID.randomUUID().toString(),size,(byte) 0,batch);
             list.add(testMessage);
         }
         testMessageService.batchInsert(list);
