@@ -8,16 +8,20 @@ import cn.hfbin.seckill.service.OrderService;
 import cn.hfbin.seckill.service.SeckillGoodsService;
 import cn.hfbin.seckill.service.SeckillOrderService;
 import cn.hfbin.seckill.service.TestMessageService;
-import com.alibaba.fastjson.JSON;
+
 import com.alibaba.fastjson.JSONObject;
+import com.rabbitmq.client.Channel;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.amqp.core.Message;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -242,4 +246,52 @@ public class MQReceiver {
 //		set.add(testMessage.getUuid());
 //		System.out.println("---------------set1:"+set.size()+"---------------");
 	}
+
+
+	@RabbitListener(queues = MQConfig.QUEUE_MANUAL)
+	public void manual(Message message,Channel channel){
+		long deliveryTag = message.getMessageProperties().getDeliveryTag();
+		System.out.println(message);
+		try {
+			//模拟出现错误
+			System.out.println(500/Double.valueOf(String.valueOf(message)));
+
+			channel.basicAck(deliveryTag,true);
+		} catch (IOException e) {
+			try {
+				Thread.sleep(3000);
+			} catch (InterruptedException interruptedException) {
+				interruptedException.printStackTrace();
+			}
+			try {
+				channel.basicNack(deliveryTag,true,true);
+			} catch (IOException ioException) {
+				ioException.printStackTrace();
+			}
+		}
+	}
+
+	@RabbitListener(queues = MQConfig.QUEUE_MANUAL)
+	public void manualRight(Message message,Channel channel){
+		long deliveryTag = message.getMessageProperties().getDeliveryTag();
+		System.out.println(message);
+		try {
+			//模拟出现错误
+//			System.out.println(500/Double.valueOf(String.valueOf(message)));
+
+			channel.basicAck(deliveryTag,true);
+		} catch (IOException e) {
+			try {
+				Thread.sleep(3000);
+			} catch (InterruptedException interruptedException) {
+				interruptedException.printStackTrace();
+			}
+			try {
+				channel.basicNack(deliveryTag,true,true);
+			} catch (IOException ioException) {
+				ioException.printStackTrace();
+			}
+		}
+	}
+
 }

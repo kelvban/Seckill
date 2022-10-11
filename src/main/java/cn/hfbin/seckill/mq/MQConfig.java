@@ -1,8 +1,8 @@
 package cn.hfbin.seckill.mq;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
@@ -14,6 +14,7 @@ public class MQConfig {
 	
 	public static final String MIAOSHA_QUEUE = "seckill.queue";
 	public static final String QUEUE1 = "queue1";
+	public static final String QUEUE_MANUAL = "manual";
 	public static final String QUEUE = "queue";
 	/*public static final String TOPIC_QUEUE1 = "topic.queue1";
 	public static final String TOPIC_QUEUE2 = "topic.queue2";
@@ -34,6 +35,38 @@ public class MQConfig {
 	@Bean
 	public Queue queue1() {
 		return new Queue(QUEUE1, true);
+	}
+
+	@Bean
+	public Queue manual() {
+		return new Queue(QUEUE_MANUAL, true);
+	}
+
+	// 获取RabbitMQ服务器连接
+	public static Connection getConnection() {
+		Connection connection = null;
+		try {
+			ConnectionFactory factory = new ConnectionFactory();
+			factory.setHost("mine.com");
+			factory.setPort(5672);
+			factory.setUsername("seckill");
+			factory.setPassword("1234");
+			connection = factory.newConnection();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return connection;
+	}
+
+	public static Channel getChannel(){
+		Connection connection=getConnection();
+		Channel channel=null;
+		try{
+			channel=connection.createChannel();
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		return channel;
 	}
 
 
