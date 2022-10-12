@@ -135,6 +135,35 @@ public class SeckillController implements InitializingBean {
         return Result.success("执行完成");
     }
 
+    @RequestMapping("/test-basicQos")
+    @ResponseBody
+    public Result<String> testBasicQos(@RequestParam Integer size,
+                                     @RequestParam Integer range,
+                                     @RequestParam String batch){
+        Random random=new Random();
+        List<TestMessage> list=new ArrayList<>();
+        for(int i=0;i<size;i++){
+            TestMessage testMessage=new TestMessage(new Date(),random.nextInt(range), UUID.randomUUID().toString(),size,(byte) 0,batch);
+            list.add(testMessage);
+        }
+        testMessageService.batchInsert(list);
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                Long startTime=System.currentTimeMillis();
+                if(CollectionUtils.isNotEmpty(list)){
+                    for (TestMessage testMessage:list){
+                        mqSender.sendTestBasicQosMessage(testMessage);
+                    }
+                }
+                Long endTime=System.currentTimeMillis();
+                System.out.println("推送总用时："+(endTime-startTime));
+            }
+        });
+
+        return Result.success("执行完成");
+    }
+
 
     @RequestMapping("/seckill2")
     public String list2(Model model,

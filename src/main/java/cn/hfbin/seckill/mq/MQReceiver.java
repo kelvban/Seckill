@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
 @Service
@@ -40,6 +41,9 @@ public class MQReceiver {
 		private static Set<String> set=new HashSet<>();
 		private static Set<String> set1=new HashSet<>();
 
+		private static AtomicInteger ai=new AtomicInteger(0);
+
+		private static AtomicInteger ai1=new AtomicInteger(0);
 		
 		@Autowired
 		RedisService redisService;
@@ -271,26 +275,52 @@ public class MQReceiver {
 		}
 	}
 
-	@RabbitListener(queues = MQConfig.QUEUE_MANUAL)
-	public void manualRight(Message message,Channel channel){
-		long deliveryTag = message.getMessageProperties().getDeliveryTag();
-		System.out.println(message);
-		try {
-			//模拟出现错误
-//			System.out.println(500/Double.valueOf(String.valueOf(message)));
+//	@RabbitListener(queues = MQConfig.QUEUE_MANUAL)
+//	public void manualRight(Message message,Channel channel){
+//		long deliveryTag = message.getMessageProperties().getDeliveryTag();
+//		System.out.println(message);
+//		try {
+//			//模拟出现错误
+////			System.out.println(500/Double.valueOf(String.valueOf(message)));
+//
+//			channel.basicAck(deliveryTag,true);
+//		} catch (IOException e) {
+//			try {
+//				Thread.sleep(3000);
+//			} catch (InterruptedException interruptedException) {
+//				interruptedException.printStackTrace();
+//			}
+//			try {
+//				channel.basicNack(deliveryTag,true,true);
+//			} catch (IOException ioException) {
+//				ioException.printStackTrace();
+//			}
+//		}
+//	}
 
-			channel.basicAck(deliveryTag,true);
-		} catch (IOException e) {
-			try {
-				Thread.sleep(3000);
-			} catch (InterruptedException interruptedException) {
-				interruptedException.printStackTrace();
-			}
-			try {
-				channel.basicNack(deliveryTag,true,true);
-			} catch (IOException ioException) {
-				ioException.printStackTrace();
-			}
+	@RabbitListener(queues = MQConfig.QUEUE_BasicQos)
+	public void basicQos(Message message,Channel channel){
+		try {
+			channel.basicQos(1);
+			System.out.println("high:"+message.toString());
+			ai.getAndAdd(1);
+			System.out.println("ai high:"+ai.get());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	@RabbitListener(queues = MQConfig.QUEUE_BasicQos)
+	public void basicQosLow(Message message,Channel channel){
+		try {
+//			channel.basicQos(1);
+//			Thread.sleep(5000);
+			System.out.println("low"+message.toString());
+			ai1.getAndAdd(1);
+			System.out.println("ai low:"+ai1.get());
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 

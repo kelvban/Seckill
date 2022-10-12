@@ -9,6 +9,8 @@ import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.io.IOException;
+
 @Configuration
 public class MQConfig {
 	
@@ -16,6 +18,7 @@ public class MQConfig {
 	public static final String QUEUE1 = "queue1";
 	public static final String QUEUE_MANUAL = "manual";
 	public static final String QUEUE = "queue";
+	public static final String QUEUE_BasicQos="basicQos";
 	/*public static final String TOPIC_QUEUE1 = "topic.queue1";
 	public static final String TOPIC_QUEUE2 = "topic.queue2";
 	public static final String HEADER_QUEUE = "header.queue";
@@ -42,6 +45,11 @@ public class MQConfig {
 		return new Queue(QUEUE_MANUAL, true);
 	}
 
+	@Bean
+	public Queue basicQos() {
+		return new Queue(QUEUE_BasicQos, true);
+	}
+
 	// 获取RabbitMQ服务器连接
 	public static Connection getConnection() {
 		Connection connection = null;
@@ -64,6 +72,15 @@ public class MQConfig {
 		try{
 			channel=connection.createChannel();
 		}catch (Exception e){
+			e.printStackTrace();
+		}
+		return channel;
+	}
+
+	public static Channel setBasicQos(Channel channel){
+		try {
+			channel.basicQos(1);
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return channel;
