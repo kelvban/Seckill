@@ -14,6 +14,10 @@ import com.rabbitmq.client.Channel;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.core.ExchangeTypes;
+import org.springframework.amqp.rabbit.annotation.Exchange;
+import org.springframework.amqp.rabbit.annotation.Queue;
+import org.springframework.amqp.rabbit.annotation.QueueBinding;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +54,9 @@ public class MQReceiver {
 
 		private static AtomicInteger fai1=new AtomicInteger(0);
 		private static AtomicInteger fai2=new AtomicInteger(0);
+
+		private static AtomicInteger dai=new AtomicInteger(0);
+		private static AtomicInteger dai1=new AtomicInteger(0);
 		
 		@Autowired
 		RedisService redisService;
@@ -370,4 +377,38 @@ public class MQReceiver {
 		}
 	}
 
+
+	@RabbitListener(bindings = @QueueBinding(
+			value = @Queue(value = MQConfig.DIRECT_QUEUE,durable = "true",exclusive = "false",autoDelete = "false")
+			,exchange = @Exchange(value = MQConfig.DIRECT_EX,type = ExchangeTypes.DIRECT,durable = "true",autoDelete = "false")
+			,key = "even"
+	))
+	public void directReceiver(Message message,Channel channel){
+		try {
+//			channel.basicQos(1);
+//			Thread.sleep(5000);
+			System.out.println("zero direct"+message.toString());
+			dai.getAndAdd(1);
+			System.out.println("zero direct:"+dai.get());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@RabbitListener(bindings = @QueueBinding(
+			value = @Queue(value = MQConfig.DIRECT_QUEUE,durable = "true",exclusive = "false",autoDelete = "false")
+			,exchange = @Exchange(value = MQConfig.DIRECT_EX,type = ExchangeTypes.DIRECT,durable = "true",autoDelete = "false")
+			,key = "odd"
+	))
+	public void directReceiver1(Message message,Channel channel){
+		try {
+//			channel.basicQos(1);
+//			Thread.sleep(5000);
+			System.out.println("one direct"+message.toString());
+			dai1.getAndAdd(1);
+			System.out.println("one direct:"+dai1.get());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }
