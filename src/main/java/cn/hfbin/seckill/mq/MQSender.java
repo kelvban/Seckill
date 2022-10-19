@@ -50,7 +50,7 @@ public class MQSender {
 	public void sendDirectMessage(TestMessage testMessage,String routeKey) {
 		String msg = RedisService.beanToString(testMessage);
 		log.info("send message:"+msg);
-		amqpTemplate.convertAndSend(MQConfig.DIRECT_QUEUE,routeKey, msg);
+		amqpTemplate.convertAndSend(MQConfig.DIRECT_EX,routeKey, msg);
 	}
 
 }

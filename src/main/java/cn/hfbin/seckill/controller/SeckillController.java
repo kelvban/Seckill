@@ -215,11 +215,12 @@ public class SeckillController implements InitializingBean {
 //                        mqSender.sendFanoutMessage(testMessage);
 //                    }
                     for(int i=0;i<list.size();i++){
-                        if(i%2==0){
-                            mqSender.sendDirectMessage(list.get(i),"even");
-                        }else {
-                            mqSender.sendDirectMessage(list.get(i),"odd");
-                        }
+//                        if(i%2==0){
+//                            mqSender.sendDirectMessage(list.get(i),"even");
+//                        }else {
+//                            mqSender.sendDirectMessage(list.get(i),"odd");
+//                        }
+                        mqSender.sendDirectMessage(list.get(i),"even");
                     }
                 }
                 Long endTime=System.currentTimeMillis();
