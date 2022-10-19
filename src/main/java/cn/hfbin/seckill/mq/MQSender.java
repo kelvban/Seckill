@@ -41,4 +41,16 @@ public class MQSender {
 		amqpTemplate.convertAndSend(MQConfig.QUEUE_BasicQos, msg);
 	}
 
+	public void sendFanoutMessage(TestMessage testMessage) {
+		String msg = RedisService.beanToString(testMessage);
+		log.info("send message:"+msg);
+		amqpTemplate.convertAndSend(MQConfig.FANOUT_EX,"", msg);
+	}
+
+	public void sendDirectMessage(TestMessage testMessage,String routeKey) {
+		String msg = RedisService.beanToString(testMessage);
+		log.info("send message:"+msg);
+		amqpTemplate.convertAndSend(MQConfig.DIRECT_QUEUE,routeKey, msg);
+	}
+
 }

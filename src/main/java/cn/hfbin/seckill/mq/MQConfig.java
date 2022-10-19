@@ -19,12 +19,22 @@ public class MQConfig {
 	public static final String QUEUE_MANUAL = "manual";
 	public static final String QUEUE = "queue";
 	public static final String QUEUE_BasicQos="basicQos";
+
+	public static final String FANOUT_EX="fanout.exchange";
+	public static final String FANOUT_QUEUE="fanout.queue";
+	public static final String FANOUT_QUEUE1="fanout.queue1";
+	public static final String FANOUT_QUEUE2="fanout.queue2";
+
+	public static final String DIRECT_EX="direct.exchange";
+	public static final String DIRECT_QUEUE="direct.queue";
+
 	/*public static final String TOPIC_QUEUE1 = "topic.queue1";
 	public static final String TOPIC_QUEUE2 = "topic.queue2";
 	public static final String HEADER_QUEUE = "header.queue";
 	public static final String TOPIC_EXCHANGE = "topicExchage";
 	public static final String FANOUT_EXCHANGE = "fanoutxchage";
 	public static final String HEADERS_EXCHANGE = "headersExchage";*/
+
 
 	@Bean
 	public MessageConverter getMessageConverter() {
@@ -48,6 +58,26 @@ public class MQConfig {
 	@Bean
 	public Queue basicQos() {
 		return new Queue(QUEUE_BasicQos, true);
+	}
+
+	@Bean
+	public Queue fanoutQueue(){
+		return new Queue(FANOUT_QUEUE,true);
+	}
+
+	@Bean
+	public Queue fanoutQueue1(){
+		return new Queue(FANOUT_QUEUE1,true);
+	}
+
+	@Bean
+	public Queue fanoutQueue2(){
+		return new Queue(FANOUT_QUEUE2,true);
+	}
+
+	@Bean
+	public Queue directQueue(){
+		return new Queue(DIRECT_QUEUE,true);
 	}
 
 	// 获取RabbitMQ服务器连接
@@ -86,6 +116,35 @@ public class MQConfig {
 		return channel;
 	}
 
+	/**
+	 * 扇出交换机
+	 */
+	@Bean
+	public FanoutExchange fanoutExchange(){
+		return new FanoutExchange(FANOUT_EX);
+	}
+
+	@Bean
+	public Binding FanoutBinding(){
+		return BindingBuilder.bind(fanoutQueue()).to(fanoutExchange());
+	}
+
+	@Bean
+	public Binding FanoutBinding1(){
+		return BindingBuilder.bind(fanoutQueue1()).to(fanoutExchange());
+	}
+
+	@Bean
+	public Binding FanoutBinding2(){
+		return BindingBuilder.bind(fanoutQueue2()).to(fanoutExchange());
+	}
+	/**
+	 * 直接模式
+	 */
+	@Bean
+	public DirectExchange directExchange(){
+		return new DirectExchange(DIRECT_EX);
+	}
 
 
 	/**

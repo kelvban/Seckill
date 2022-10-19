@@ -165,6 +165,72 @@ public class SeckillController implements InitializingBean {
     }
 
 
+    @RequestMapping("/test-fanout")
+    @ResponseBody
+    public Result<String> testFanout(@RequestParam Integer size,
+                                       @RequestParam Integer range,
+                                       @RequestParam String batch){
+        Random random=new Random();
+        List<TestMessage> list=new ArrayList<>();
+        for(int i=0;i<size;i++){
+            TestMessage testMessage=new TestMessage(new Date(),random.nextInt(range), UUID.randomUUID().toString(),size,(byte) 0,batch);
+            list.add(testMessage);
+        }
+        testMessageService.batchInsert(list);
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                Long startTime=System.currentTimeMillis();
+                if(CollectionUtils.isNotEmpty(list)){
+                    for (TestMessage testMessage:list){
+                        mqSender.sendFanoutMessage(testMessage);
+                    }
+                }
+                Long endTime=System.currentTimeMillis();
+                System.out.println("推送总用时："+(endTime-startTime));
+            }
+        });
+
+        return Result.success("执行完成");
+    }
+
+    @RequestMapping("/test-direct")
+    @ResponseBody
+    public Result<String> testDirect(@RequestParam Integer size,
+                                     @RequestParam Integer range,
+                                     @RequestParam String batch){
+        Random random=new Random();
+        List<TestMessage> list=new ArrayList<>();
+        for(int i=0;i<size;i++){
+            TestMessage testMessage=new TestMessage(new Date(),random.nextInt(range), UUID.randomUUID().toString(),size,(byte) 0,batch);
+            list.add(testMessage);
+        }
+        testMessageService.batchInsert(list);
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                Long startTime=System.currentTimeMillis();
+                if(CollectionUtils.isNotEmpty(list)){
+//                    for (TestMessage testMessage:list){
+//                        mqSender.sendFanoutMessage(testMessage);
+//                    }
+                    for(int i=0;i<list.size();i++){
+                        if(i%2==0){
+                            mqSender.sendDirectMessage(list.get(i),"even");
+                        }else {
+                            mqSender.sendDirectMessage(list.get(i),"odd");
+                        }
+                    }
+                }
+                Long endTime=System.currentTimeMillis();
+                System.out.println("推送总用时："+(endTime-startTime));
+            }
+        });
+
+        return Result.success("执行完成");
+    }
+
+
     @RequestMapping("/seckill2")
     public String list2(Model model,
                         @RequestParam("goodsId") long goodsId, HttpServletRequest request) {

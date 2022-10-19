@@ -44,6 +44,12 @@ public class MQReceiver {
 		private static AtomicInteger ai=new AtomicInteger(0);
 
 		private static AtomicInteger ai1=new AtomicInteger(0);
+
+
+		private static AtomicInteger fai=new AtomicInteger(0);
+
+		private static AtomicInteger fai1=new AtomicInteger(0);
+		private static AtomicInteger fai2=new AtomicInteger(0);
 		
 		@Autowired
 		RedisService redisService;
@@ -319,6 +325,46 @@ public class MQReceiver {
 			System.out.println("low"+message.toString());
 			ai1.getAndAdd(1);
 			System.out.println("ai low:"+ai1.get());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+
+	@RabbitListener(queues = MQConfig.FANOUT_QUEUE)
+	public void fanoutReceiver(Message message,Channel channel){
+		try {
+//			channel.basicQos(1);
+//			Thread.sleep(5000);
+			System.out.println("zreo fanout"+message.toString());
+			fai.getAndAdd(1);
+			System.out.println("zreo fanout:"+fai.get());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@RabbitListener(queues = MQConfig.FANOUT_QUEUE1)
+	public void fanoutReceiver1(Message message,Channel channel){
+		try {
+//			channel.basicQos(1);
+//			Thread.sleep(5000);
+			System.out.println("one fanout"+message.toString());
+			fai1.getAndAdd(1);
+			System.out.println("one fanout:"+fai1.get());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@RabbitListener(queues = MQConfig.FANOUT_QUEUE2)
+	public void fanoutReceiver2(Message message,Channel channel){
+		try {
+//			channel.basicQos(1);
+//			Thread.sleep(5000);
+			System.out.println("two fanout"+message.toString());
+			fai2.getAndAdd(1);
+			System.out.println("two fanout:"+fai2.get());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
