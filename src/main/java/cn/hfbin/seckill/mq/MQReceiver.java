@@ -57,6 +57,9 @@ public class MQReceiver {
 
 		private static AtomicInteger dai=new AtomicInteger(0);
 		private static AtomicInteger dai1=new AtomicInteger(0);
+
+		private static AtomicInteger tai=new AtomicInteger(0);
+		private static AtomicInteger tai1=new AtomicInteger(0);
 		
 		@Autowired
 		RedisService redisService;
@@ -407,6 +410,41 @@ public class MQReceiver {
 			System.out.println("one direct"+message.toString());
 			dai1.getAndAdd(1);
 			System.out.println("one direct:"+dai1.get());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+
+	@RabbitListener(bindings = @QueueBinding(
+			value = @Queue(value = MQConfig.TOPIC_QUEUE,durable = "true",exclusive = "false",autoDelete = "false")
+			,exchange = @Exchange(value = MQConfig.TOPIC_EX,type = ExchangeTypes.TOPIC,durable = "true",autoDelete = "false")
+			,key = "topic.*.key"
+	))
+	public void topicReceiver(Message message,Channel channel){
+		try {
+//			channel.basicQos(1);
+//			Thread.sleep(5000);
+			System.out.println("zero topic"+message.toString());
+			tai.getAndAdd(1);
+			System.out.println("zero topic:"+tai.get());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@RabbitListener(bindings = @QueueBinding(
+			value = @Queue(value = MQConfig.TOPIC_QUEUE1,durable = "true",exclusive = "false",autoDelete = "false")
+			,exchange = @Exchange(value = MQConfig.TOPIC_EX,type = ExchangeTypes.TOPIC,durable = "true",autoDelete = "false")
+			,key = "topic.test"
+	))
+	public void topicReceiver1(Message message,Channel channel){
+		try {
+//			channel.basicQos(1);
+//			Thread.sleep(5000);
+			System.out.println("one topic"+message.toString());
+			tai1.getAndAdd(1);
+			System.out.println("one topic:"+tai1.get());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

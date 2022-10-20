@@ -29,6 +29,10 @@ public class MQConfig {
 	public static final String DIRECT_QUEUE="direct.queue";
 	public static final String DIRECT_QUEUE1="direct.queue1";
 
+	public static final String TOPIC_EX="topic.exchange";
+	public static final String TOPIC_QUEUE="topic.queue";
+	public static final String TOPIC_QUEUE1="topic.queue1";
+
 	/*public static final String TOPIC_QUEUE1 = "topic.queue1";
 	public static final String TOPIC_QUEUE2 = "topic.queue2";
 	public static final String HEADER_QUEUE = "header.queue";
@@ -84,6 +88,16 @@ public class MQConfig {
 	@Bean
 	public Queue directQueue1(){
 		return new Queue(DIRECT_QUEUE1,true);
+	}
+
+	@Bean
+	public Queue topicQueue(){
+		return new Queue(TOPIC_QUEUE,true);
+	}
+
+	@Bean
+	public Queue topicQueue1(){
+		return new Queue(TOPIC_QUEUE1,true);
 	}
 
 	// 获取RabbitMQ服务器连接
@@ -161,6 +175,26 @@ public class MQConfig {
 	public Binding directBinding1 () {
 		return BindingBuilder.bind(directQueue1()).to(directExchange()).with("odd");
 	}
+
+	/**
+	 * 主题模式
+	 */
+	@Bean
+	public TopicExchange topicExchange(){
+		return new TopicExchange(TOPIC_EX);
+	}
+
+	@Bean
+	public Binding topicBinding () {
+		return BindingBuilder.bind(topicQueue()).to(topicExchange()).with("topic.*.key");
+	}
+
+	@Bean
+	public Binding topicBinding1 () {
+		return BindingBuilder.bind(directQueue1()).to(directExchange()).with("topic.test");
+	}
+
+
 
 	/**
 	 * Direct模式 交换机Exchange
