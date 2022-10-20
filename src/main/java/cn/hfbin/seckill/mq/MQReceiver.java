@@ -60,6 +60,9 @@ public class MQReceiver {
 
 		private static AtomicInteger tai=new AtomicInteger(0);
 		private static AtomicInteger tai1=new AtomicInteger(0);
+
+		private static AtomicInteger hai=new AtomicInteger(0);
+		private static AtomicInteger hai1=new AtomicInteger(0);
 		
 		@Autowired
 		RedisService redisService;
@@ -445,6 +448,33 @@ public class MQReceiver {
 			System.out.println("one topic"+message.toString());
 			tai1.getAndAdd(1);
 			System.out.println("one topic:"+tai1.get());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+
+	@RabbitListener(queues = MQConfig.HEADER_QUEUE)
+	public void headersReceiver(Message message,Channel channel){
+		try {
+//			channel.basicQos(1);
+//			Thread.sleep(5000);
+			System.out.println("zero headers"+message.toString());
+			hai.getAndAdd(1);
+			System.out.println("zero headers:"+hai.get());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@RabbitListener(queues = MQConfig.HEADER_QUEUE1)
+	public void headersReceiver1(Message message,Channel channel){
+		try {
+//			channel.basicQos(1);
+//			Thread.sleep(5000);
+			System.out.println("one headers"+message.toString());
+			hai1.getAndAdd(1);
+			System.out.println("one headers:"+hai1.get());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

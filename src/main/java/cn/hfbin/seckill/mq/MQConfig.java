@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 @Configuration
 public class MQConfig {
@@ -32,6 +33,10 @@ public class MQConfig {
 	public static final String TOPIC_EX="topic.exchange";
 	public static final String TOPIC_QUEUE="topic.queue";
 	public static final String TOPIC_QUEUE1="topic.queue1";
+
+	public static final String HEADERS_EX="headers.exchange";
+	public static final String HEADER_QUEUE="headers.whereAll";
+	public static final String HEADER_QUEUE1="headers.whereAny";
 
 	/*public static final String TOPIC_QUEUE1 = "topic.queue1";
 	public static final String TOPIC_QUEUE2 = "topic.queue2";
@@ -98,6 +103,16 @@ public class MQConfig {
 	@Bean
 	public Queue topicQueue1(){
 		return new Queue(TOPIC_QUEUE1,true);
+	}
+
+	@Bean
+	public Queue headersQueue(){
+		return new Queue(HEADER_QUEUE,true);
+	}
+
+	@Bean
+	public Queue headersQueue1(){
+		return new Queue(HEADER_QUEUE1,true);
 	}
 
 	// 获取RabbitMQ服务器连接
@@ -194,6 +209,30 @@ public class MQConfig {
 		return BindingBuilder.bind(directQueue1()).to(directExchange()).with("topic.test");
 	}
 
+
+	/**
+	 * 标题模式
+	 */
+	@Bean
+	public HeadersExchange headersExchange(){
+		return new HeadersExchange(HEADERS_EX);
+	}
+
+	@Bean
+	public Binding headersBinding(){
+		HashMap<String,Object> header=new HashMap<>();
+		header.put("queue","headersQueue");
+		header.put("bindType","whereAll");
+		return BindingBuilder.bind(headersQueue()).to(headersExchange()).whereAll(header).match();
+	}
+
+	@Bean
+	public Binding headersBinding1(){
+		HashMap<String,Object> header=new HashMap<>();
+		header.put("queue","headersQueue1");
+		header.put("bindType","whereAny");
+		return BindingBuilder.bind(headersQueue1()).to(headersExchange()).whereAll(header).match();
+	}
 
 
 	/**

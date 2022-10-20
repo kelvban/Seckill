@@ -4,6 +4,8 @@ import cn.hfbin.seckill.redis.RedisService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -58,6 +60,16 @@ public class MQSender {
 		String msg = RedisService.beanToString(testMessage);
 		log.info("send message:"+msg);
 		amqpTemplate.convertAndSend(MQConfig.TOPIC_EX,routeKey, msg);
+	}
+
+	public void sendHeaderMessage(TestMessage testMessage,String queueName) {
+		String msg = RedisService.beanToString(testMessage);
+		log.info("send message:"+msg);
+		MessageProperties messageProperties = new MessageProperties();
+		messageProperties.setHeader("queue", queueName);
+		messageProperties.setHeader("bindType", "whereAll");
+		Message message = new Message(msg.getBytes(), messageProperties);
+		amqpTemplate.convertAndSend(MQConfig.TOPIC_EX,null, message);
 	}
 
 }
