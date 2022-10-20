@@ -396,7 +396,7 @@ public class MQReceiver {
 	}
 
 	@RabbitListener(bindings = @QueueBinding(
-			value = @Queue(value = MQConfig.DIRECT_QUEUE,durable = "true",exclusive = "false",autoDelete = "false")
+			value = @Queue(value = MQConfig.DIRECT_QUEUE1,durable = "true",exclusive = "false",autoDelete = "false")
 			,exchange = @Exchange(value = MQConfig.DIRECT_EX,type = ExchangeTypes.DIRECT,durable = "true",autoDelete = "false")
 			,key = "odd"
 	))

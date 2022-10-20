@@ -27,6 +27,7 @@ public class MQConfig {
 
 	public static final String DIRECT_EX="direct.exchange";
 	public static final String DIRECT_QUEUE="direct.queue";
+	public static final String DIRECT_QUEUE1="direct.queue1";
 
 	/*public static final String TOPIC_QUEUE1 = "topic.queue1";
 	public static final String TOPIC_QUEUE2 = "topic.queue2";
@@ -78,6 +79,11 @@ public class MQConfig {
 	@Bean
 	public Queue directQueue(){
 		return new Queue(DIRECT_QUEUE,true);
+	}
+
+	@Bean
+	public Queue directQueue1(){
+		return new Queue(DIRECT_QUEUE1,true);
 	}
 
 	// 获取RabbitMQ服务器连接
@@ -146,6 +152,15 @@ public class MQConfig {
 		return new DirectExchange(DIRECT_EX);
 	}
 
+	@Bean
+	public Binding directBinding () {
+		return BindingBuilder.bind(directQueue()).to(directExchange()).with("even");
+	}
+
+	@Bean
+	public Binding directBinding1 () {
+		return BindingBuilder.bind(directQueue1()).to(directExchange()).with("odd");
+	}
 
 	/**
 	 * Direct模式 交换机Exchange
