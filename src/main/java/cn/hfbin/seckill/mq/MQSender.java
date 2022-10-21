@@ -62,14 +62,14 @@ public class MQSender {
 		amqpTemplate.convertAndSend(MQConfig.TOPIC_EX,routeKey, msg);
 	}
 
-	public void sendHeaderMessage(TestMessage testMessage,String queueName) {
+	public void sendHeaderMessage(TestMessage testMessage) {
 		String msg = RedisService.beanToString(testMessage);
 		log.info("send message:"+msg);
 		MessageProperties messageProperties = new MessageProperties();
-		messageProperties.setHeader("queue", queueName);
-		messageProperties.setHeader("bindType", "whereAll");
+		messageProperties.setHeader("one", "A");
+		messageProperties.setHeader("two", "B");
 		Message message = new Message(msg.getBytes(), messageProperties);
-		amqpTemplate.convertAndSend(MQConfig.TOPIC_EX,null, message);
+		amqpTemplate.convertAndSend(MQConfig.HEADERS_EX,null, message);
 	}
 
 }

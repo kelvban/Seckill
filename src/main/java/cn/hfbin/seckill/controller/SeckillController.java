@@ -280,7 +280,7 @@ public class SeckillController implements InitializingBean {
                 Long startTime=System.currentTimeMillis();
                 if(CollectionUtils.isNotEmpty(list)){
                     for (TestMessage testMessage:list){
-                        mqSender.sendHeaderMessage(testMessage,"headersQueue");
+                        mqSender.sendHeaderMessage(testMessage);
                     }
                 }
                 Long endTime=System.currentTimeMillis();

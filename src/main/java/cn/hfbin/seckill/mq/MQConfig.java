@@ -221,17 +221,17 @@ public class MQConfig {
 	@Bean
 	public Binding headersBinding(){
 		HashMap<String,Object> header=new HashMap<>();
-		header.put("queue","headersQueue");
-		header.put("bindType","whereAll");
+		header.put("one","A");
+		header.put("two","B");
 		return BindingBuilder.bind(headersQueue()).to(headersExchange()).whereAll(header).match();
 	}
 
 	@Bean
 	public Binding headersBinding1(){
 		HashMap<String,Object> header=new HashMap<>();
-		header.put("queue","headersQueue1");
-		header.put("bindType","whereAny");
-		return BindingBuilder.bind(headersQueue1()).to(headersExchange()).whereAll(header).match();
+		header.put("one","A");
+		header.put("two","B");
+		return BindingBuilder.bind(headersQueue1()).to(headersExchange()).whereAny(header).match();
 	}
 
 
