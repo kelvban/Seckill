@@ -11,6 +11,7 @@ import cn.hfbin.seckill.service.TestMessageService;
 
 import com.alibaba.fastjson.JSONObject;
 import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Envelope;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -485,9 +486,9 @@ public class MQReceiver {
 
 
 	@RabbitListener(queues = MQConfig.NORMAL_QUEUE)
-	public void normalReceiver(Message message,Channel channel){
+	public void normalReceiver(Message message, Channel channel, Envelope envelope){
 		try {
-			Thread.sleep(1000);
+//			channel.basicReject(envelope.getDeliveryTag(),true);
 //			channel.basicQos(1);
 //			Thread.sleep(5000);
 			System.out.println("normal:"+message.toString());
@@ -502,10 +503,10 @@ public class MQReceiver {
 	public void deadReceiver1(Message message,Channel channel){
 		try {
 //			channel.basicQos(1);
-//			Thread.sleep(5000);
-//			System.out.println("dead:"+message.toString());
+//			Thread.sleep(1000);
+			System.out.println("dead:"+message.toString());
 			deadai.getAndAdd(1);
-//			System.out.println("dead:"+deadai.get());
+			System.out.println("dead:"+deadai.get());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

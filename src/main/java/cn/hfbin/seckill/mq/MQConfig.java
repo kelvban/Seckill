@@ -269,6 +269,7 @@ public class MQConfig {
 		// 绑定该队列到死信交换机
 		arguments.put("x-dead-letter-exchange",DEAD_EX);
 		arguments.put("x-dead-letter-routing-key","dead.msg");
+//		arguments.put("x-max-length",1000); //设置长度，模拟超过队列长度情况
 		return new Queue(NORMAL_QUEUE,true,false,false,arguments);
 
 	}
