@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 public class MQConfig {
@@ -37,6 +38,11 @@ public class MQConfig {
 	public static final String HEADERS_EX="headers.exchange";
 	public static final String HEADER_QUEUE="headers.whereAll";
 	public static final String HEADER_QUEUE1="headers.whereAny";
+
+	public static final String NORMAL_EX="normal.exchange";
+	public static final String DEAD_EX="dead.exchange";
+	public static final String NORMAL_QUEUE="normal.queue";
+	public static final String DEAD_QUEUE="dead.queue";
 
 	/*public static final String TOPIC_QUEUE1 = "topic.queue1";
 	public static final String TOPIC_QUEUE2 = "topic.queue2";
@@ -114,6 +120,7 @@ public class MQConfig {
 	public Queue headersQueue1(){
 		return new Queue(HEADER_QUEUE1,true);
 	}
+
 
 	// 获取RabbitMQ服务器连接
 	public static Connection getConnection() {
@@ -233,6 +240,58 @@ public class MQConfig {
 		header.put("two","B");
 		return BindingBuilder.bind(headersQueue1()).to(headersExchange()).whereAny(header).match();
 	}
+
+	/**
+	 * 死信队列
+	 */
+
+	//死信队列处理
+
+	@Bean
+	public Queue deadQueue(){
+		return new Queue(DEAD_QUEUE,true);
+	}
+
+	@Bean
+	public DirectExchange deadExchage(){
+		return new DirectExchange(DEAD_EX);
+	}
+
+	@Bean
+	public Binding deadBinding(){
+		return BindingBuilder.bind(deadQueue()).to(deadExchage()).with("dead.msg");
+	}
+
+	//业务队列处理
+	@Bean
+	public Queue normalQueue(){
+		Map<String,Object> arguments = new HashMap<>(2);
+		// 绑定该队列到死信交换机
+		arguments.put("x-dead-letter-exchange",DEAD_EX);
+		arguments.put("x-dead-letter-routing-key","dead.msg");
+		return new Queue(NORMAL_QUEUE,true,false,false,arguments);
+
+	}
+//	@Bean
+//	public Queue normalQueue(){
+//		return QueueBuilder
+//				.durable(NORMAL_QUEUE)
+//				.deadLetterExchange(DEAD_EX) // 这里声明当前队列绑定的死信交换机
+//				.deadLetterRoutingKey("dead.msg")  // 这里声明当前队列的死信路由key
+//				.build();
+//	}
+
+	@Bean
+	public DirectExchange normalExchage(){
+		return new DirectExchange(NORMAL_EX);
+	}
+	@Bean
+	public Binding normalBinding(){
+		return BindingBuilder.bind(normalQueue()).to(normalExchage()).with("normal.msg");
+	}
+
+
+
 
 
 	/**

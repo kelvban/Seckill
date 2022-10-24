@@ -63,6 +63,9 @@ public class MQReceiver {
 
 		private static AtomicInteger hai=new AtomicInteger(0);
 		private static AtomicInteger hai1=new AtomicInteger(0);
+
+		private static AtomicInteger normalai=new AtomicInteger(0);
+		private static AtomicInteger deadai=new AtomicInteger(0);
 		
 		@Autowired
 		RedisService redisService;
@@ -475,6 +478,34 @@ public class MQReceiver {
 			System.out.println("one headers"+message.toString());
 			hai1.getAndAdd(1);
 			System.out.println("one headers:"+hai1.get());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+
+	@RabbitListener(queues = MQConfig.NORMAL_QUEUE)
+	public void normalReceiver(Message message,Channel channel){
+		try {
+			Thread.sleep(1000);
+//			channel.basicQos(1);
+//			Thread.sleep(5000);
+			System.out.println("normal:"+message.toString());
+			normalai.getAndAdd(1);
+			System.out.println("normal:"+normalai.get());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@RabbitListener(queues = MQConfig.DEAD_QUEUE)
+	public void deadReceiver1(Message message,Channel channel){
+		try {
+//			channel.basicQos(1);
+//			Thread.sleep(5000);
+//			System.out.println("dead:"+message.toString());
+			deadai.getAndAdd(1);
+//			System.out.println("dead:"+deadai.get());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

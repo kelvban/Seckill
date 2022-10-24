@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageDeliveryMode;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -70,6 +71,16 @@ public class MQSender {
 		messageProperties.setHeader("two", "B");
 		Message message = new Message(msg.getBytes(), messageProperties);
 		amqpTemplate.convertAndSend(MQConfig.HEADERS_EX,null, message);
+	}
+
+	public void sendDeadMessage(TestMessage testMessage) {
+		String msg = RedisService.beanToString(testMessage);
+		log.info("send message:"+msg);
+		MessageProperties messageProperties = new MessageProperties();
+		messageProperties.setDeliveryMode(MessageDeliveryMode.PERSISTENT);
+		messageProperties.setExpiration("10000");
+		Message message = new Message(msg.getBytes(), messageProperties);
+		amqpTemplate.convertAndSend(MQConfig.NORMAL_EX,"normal.msg", message);
 	}
 
 }
