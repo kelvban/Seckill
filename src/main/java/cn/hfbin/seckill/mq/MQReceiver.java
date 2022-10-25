@@ -27,10 +27,7 @@ import org.springframework.amqp.core.Message;
 
 import javax.annotation.Resource;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -486,15 +483,26 @@ public class MQReceiver {
 
 
 	@RabbitListener(queues = MQConfig.NORMAL_QUEUE)
-	public void normalReceiver(Message message, Channel channel, Envelope envelope){
+	public void normalReceiver(Message message, Channel channel) throws IOException {
 		try {
-//			channel.basicReject(envelope.getDeliveryTag(),true);
-//			channel.basicQos(1);
-//			Thread.sleep(5000);
-			System.out.println("normal:"+message.toString());
-			normalai.getAndAdd(1);
-			System.out.println("normal:"+normalai.get());
+			Random random=new Random(10);
+			Integer num=random.nextInt();
+			if(num%2==0){
+				channel.basicReject(message.getMessageProperties().getDeliveryTag(),false); //获取标识并拒绝 true则重新入队列，
+				// 否则丢弃或者进入死信队列。该方法reject后，该消费者还是会消费到该条被reject的消息。
+			}else {
+//				channel.basicQos(1);
+//				Thread.sleep(5000);
+				System.out.println("normal:"+message.toString());
+				normalai.getAndAdd(1);
+				System.out.println("normal:"+normalai.get());
+				//签收消息
+				channel.basicAck(message.getMessageProperties().getDeliveryTag(),false); // 消息的标识，false只确认当前一个消息收到，
+				// true确认所有consumer获得的消息（成功消费，消息从队列中删除 ）
+			}
 		} catch (Exception e) {
+			channel.basicReject(message.getMessageProperties().getDeliveryTag(),false); //获取标识并拒绝 true则重新入队列，
+			// 否则丢弃或者进入死信队列。该方法reject后，该消费者还是会消费到该条被reject的消息。
 			e.printStackTrace();
 		}
 	}
