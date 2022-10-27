@@ -64,6 +64,8 @@ public class MQReceiver {
 
 		private static AtomicInteger normalai=new AtomicInteger(0);
 		private static AtomicInteger deadai=new AtomicInteger(0);
+
+		private static AtomicInteger ddeadai=new AtomicInteger(0);
 		
 		@Autowired
 		RedisService redisService;
@@ -515,6 +517,20 @@ public class MQReceiver {
 			System.out.println("dead:"+message.toString());
 			deadai.getAndAdd(1);
 			System.out.println("dead:"+deadai.get());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+
+	@RabbitListener(queues = MQConfig.DELAY_DEAD_QUEUE)
+	public void delayDeadReceiver(Message message,Channel channel){
+		try {
+//			channel.basicQos(1);
+//			Thread.sleep(1000);
+			System.out.println(new Date()+":delay dead ab:"+message.toString());
+			ddeadai.getAndAdd(1);
+			System.out.println("delay dead ab:"+ddeadai.get());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

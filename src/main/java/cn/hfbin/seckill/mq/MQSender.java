@@ -83,4 +83,15 @@ public class MQSender {
 		amqpTemplate.convertAndSend(MQConfig.NORMAL_EX,"normal.msg", message);
 	}
 
+
+	public void sendDelayABMessage(TestMessage testMessage,String routingKey,Long tll) {
+		String msg = RedisService.beanToString(testMessage);
+		log.info("send message:"+msg);
+		MessageProperties messageProperties = new MessageProperties();
+		messageProperties.setDeliveryMode(MessageDeliveryMode.PERSISTENT);
+		messageProperties.setExpiration(tll.toString());
+		Message message = new Message(msg.getBytes(), messageProperties);
+		amqpTemplate.convertAndSend(MQConfig.DELAY_EX,routingKey, message);
+	}
+
 }

@@ -44,6 +44,12 @@ public class MQConfig {
 	public static final String NORMAL_QUEUE="normal.queue";
 	public static final String DEAD_QUEUE="dead.queue";
 
+	public static final String DELAY_DEAD_EX="delay.dead.exchange";
+	public static final String DELAY_EX="delay.direct.exchange";
+	public static final String DELAY_DEAD_QUEUE="delay.dead.queue";
+	public static final String DELAY_QUEUE="delay.queue.qa";
+	public static final String DELAY_QUEUE1="delay.queue.qb";
+
 	/*public static final String TOPIC_QUEUE1 = "topic.queue1";
 	public static final String TOPIC_QUEUE2 = "topic.queue2";
 	public static final String HEADER_QUEUE = "header.queue";
@@ -289,6 +295,60 @@ public class MQConfig {
 	@Bean
 	public Binding normalBinding(){
 		return BindingBuilder.bind(normalQueue()).to(normalExchage()).with("normal.msg");
+	}
+
+	/**
+	 * 延迟队列
+	 * @return
+	 */
+
+	//绑定死信队列
+	@Bean
+	public Queue delayDeadQueue(){
+		return new Queue(DELAY_DEAD_QUEUE,true);
+	}
+
+	@Bean
+	public DirectExchange delayDeadExchange(){
+		return new DirectExchange(DELAY_DEAD_EX);
+	}
+
+	@Bean
+	public Binding delayDeadBinding(){
+		return BindingBuilder.bind(delayDeadQueue()).to(delayDeadExchange()).with("delay.dead.msg");
+	}
+	//设置过期时间，模拟延迟
+	@Bean
+	public Queue delayQueue(){
+		Map<String,Object> arguments = new HashMap<>(2);
+		// 绑定该队列到死信交换机
+		arguments.put("x-dead-letter-exchange",DELAY_DEAD_EX);
+		arguments.put("x-dead-letter-routing-key","delay.dead.msg");
+//		arguments.put("x-max-length",1000); //设置长度，模拟超过队列长度情况
+		return new Queue(DELAY_QUEUE,true,false,false,arguments);
+	}
+	@Bean
+	public Queue delayQueue1(){
+		Map<String,Object> arguments = new HashMap<>(2);
+		// 绑定该队列到死信交换机
+		arguments.put("x-dead-letter-exchange",DELAY_DEAD_EX);
+		arguments.put("x-dead-letter-routing-key","delay.dead.msg");
+//		arguments.put("x-max-length",1000); //设置长度，模拟超过队列长度情况
+		return new Queue(DELAY_QUEUE1,true,false,false,arguments);
+	}
+	@Bean
+	public DirectExchange delayExchage(){
+		return new DirectExchange(DELAY_EX);
+	}
+
+	@Bean
+	public Binding delayBinding(){
+		return BindingBuilder.bind(delayQueue()).to(delayExchage()).with("delay.qa.msg");
+	}
+
+	@Bean
+	public Binding delayBinding1(){
+		return BindingBuilder.bind(delayQueue1()).to(delayExchage()).with("delay.qb.msg");
 	}
 
 
