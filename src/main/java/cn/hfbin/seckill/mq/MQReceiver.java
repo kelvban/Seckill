@@ -66,6 +66,8 @@ public class MQReceiver {
 		private static AtomicInteger deadai=new AtomicInteger(0);
 
 		private static AtomicInteger ddeadai=new AtomicInteger(0);
+
+		private static AtomicInteger dpluginai=new AtomicInteger(0);
 		
 		@Autowired
 		RedisService redisService;
@@ -531,6 +533,19 @@ public class MQReceiver {
 			System.out.println(new Date()+":delay dead ab:"+message.toString());
 			ddeadai.getAndAdd(1);
 			System.out.println("delay dead ab:"+ddeadai.get());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@RabbitListener(queues = MQConfig.DELAY_PLUGIN_QUEUE)
+	public void delayPluginReceiver(Message message,Channel channel){
+		try {
+//			channel.basicQos(1);
+//			Thread.sleep(1000);
+			System.out.println(new Date()+":delay plugin:"+message.toString());
+			dpluginai.getAndAdd(1);
+			System.out.println("delay plugin:"+dpluginai.get());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

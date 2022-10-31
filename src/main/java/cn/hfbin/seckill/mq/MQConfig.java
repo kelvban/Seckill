@@ -50,6 +50,9 @@ public class MQConfig {
 	public static final String DELAY_QUEUE="delay.queue.qa";
 	public static final String DELAY_QUEUE1="delay.queue.qb";
 
+	public static final String DELAY_PLUGIN_EXCHANGE="delay.plugin.exchange";
+	public static final String DELAY_PLUGIN_QUEUE="delay.plugin.queue";
+
 	/*public static final String TOPIC_QUEUE1 = "topic.queue1";
 	public static final String TOPIC_QUEUE2 = "topic.queue2";
 	public static final String HEADER_QUEUE = "header.queue";
@@ -352,6 +355,27 @@ public class MQConfig {
 	}
 
 
+	/**
+	 * 插件实现延迟队列
+	 */
+	@Bean
+	public Queue delayPluginQueue(){
+		return new Queue(DELAY_PLUGIN_QUEUE,true);
+	}
+
+	@Bean
+	public CustomExchange delayPluginExchange(){
+		Map<String,Object> arguments=new HashMap<>();
+		//延时交换机一定要设置x-delayed-type属性
+		arguments.put("x-delayed-type", "direct");
+		//第二个参数type需要设置成x-delayed-message
+		return new CustomExchange(DELAY_PLUGIN_EXCHANGE,"x-delayed-message",true,false,arguments);
+	}
+
+	@Bean
+	public Binding delayPluginBinding(){
+		return BindingBuilder.bind(delayPluginQueue()).to(delayPluginExchange()).with("delay.plugin.msg").noargs();
+	}
 
 
 

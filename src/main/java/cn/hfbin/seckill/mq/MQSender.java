@@ -94,4 +94,15 @@ public class MQSender {
 		amqpTemplate.convertAndSend(MQConfig.DELAY_EX,routingKey, message);
 	}
 
+	public void sendDelayPluginMessage(TestMessage testMessage,String routingKey,Long tll) {
+		String msg = RedisService.beanToString(testMessage);
+		log.info("send message:"+msg);
+		MessageProperties messageProperties = new MessageProperties();
+		messageProperties.setDeliveryMode(MessageDeliveryMode.PERSISTENT);
+//		messageProperties.setExpiration(tll.toString());
+		messageProperties.setHeader("x-delay",tll.toString()); //设置header中key为x-delay，其余不生效
+		Message message = new Message(msg.getBytes(), messageProperties);
+		amqpTemplate.convertAndSend(MQConfig.DELAY_PLUGIN_EXCHANGE,routingKey, message);
+	}
+
 }
